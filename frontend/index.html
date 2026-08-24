@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StreamFetch — Media Downloader</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="downloader-container">
+      <header class="app-header">
+        <div class="logo-mark">📥</div>
+        <h1>StreamFetch</h1>
+        <p>
+          Download and archive high-quality video content instantly through your
+          background pipeline.
+        </p>
+      </header>
+
+      <section class="card">
+        <form id="downloadForm" novalidate>
+          <div class="input-group">
+            <label for="videoUrl">Paste Video URL</label>
+            <input
+              type="url"
+              id="videoUrl"
+              placeholder="https://youtube.com..."
+              required
+              autocomplete="off"
+            />
+          </div>
+
+          <button type="submit" id="submitBtn">
+            <span class="btn-text">Initialize Download</span>
+            <span class="spinner hidden"></span>
+          </button>
+        </form>
+
+        <div id="statusMessage" class="status-box hidden" role="alert">
+          <span class="status-icon"></span>
+          <p class="status-text"></p>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
