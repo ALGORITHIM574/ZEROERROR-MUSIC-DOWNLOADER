@@ -1,0 +1,13 @@
+<mxfile host="65bd71144e">
+    <diagram id="Qfqln_JV97bcHYjt8gbH" name="Page-1">
+        <mxGraphModel dx="446" dy="323" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="📱 FRONTEND UI                  ⚡ CLOUD DATABASE               📟 BACKEND PIPELINE&#xa;(HTML, CSS, JS)                  (Supabase / PostgreSQL)        (Termux Runtime Engine)&#xa;┌────────────────┐               ┌────────────────┐             ┌────────────────┐&#xa;│  User Pastes   │ ────────────&gt; │  Stores Task   │ ──────────&gt; │  Listens &amp;     │&#xa;│  YouTube URL   │   (REST API   │  in SQL Table  │  (Realtime   │  Executes      │&#xa;│  &amp; Hits Submit │    Insert)    │ `download_logs`│   Stream)   │  yt-dlp script │&#xa;└────────────────┘               └────────────────┘             └────────────────┘&#xa;        ▲                                                               │&#xa;        │                                                               │ Saves file&#xa;        └───────────────────────────────────────────────────────────────▼&#xa;                         Updates UI Status to &quot;Success&quot;          📁 Device Storage&#xa;                                                                 (~/storage/shared)" style="text;whiteSpace=wrap;" vertex="1" parent="1">
+                    <mxGeometry x="30" y="40" width="560" height="240" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
