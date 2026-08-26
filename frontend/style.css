@@ -215,3 +215,178 @@ button:disabled {
     transform: translateY(0);
   }
 }
+/* ==========================================================================
+   SaaS Dashboard Expansion & Mobile/PC Grid Scaling
+   ========================================================================== */
+
+/* Layout wrapper optimization for scaling elements */
+.downloader-container {
+  width: 100%;
+  max-width: 1040px; /* Expanded from 480px to safely support PC splits */
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Master Responsive Grid Matrix */
+.dashboard-grid {
+  display: flex;
+  flex-direction: column; /* Stacked by default on smartphone viewports */
+  gap: 24px;
+  width: 100%;
+}
+
+/* Right-side dashboard profile panel layout */
+.dashboard-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+/* Premium Cloud Storage Meter Styling (1GB Paywall Indicator) */
+.storage-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.storage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.storage-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.storage-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+.progress-track {
+  width: 100%;
+  height: 8px;
+  background-color: var(--bg-dark);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%; /* Adjusted via Javascript calculations dynamically */
+  background: linear-gradient(90deg, var(--accent-primary), var(--success));
+  border-radius: 999px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.storage-alert-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Cloud Video History & Delivery Feed Layout */
+.history-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Individual Video Link Item Row */
+.video-item {
+  background-color: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  animation: slideUp 0.3s ease-out;
+}
+
+.video-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.video-title-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.video-meta-text {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Cloud download anchor tag button wrapper */
+.cloud-download-btn {
+  padding: 8px 14px;
+  background-color: var(--success);
+  color: #0f172a;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.cloud-download-btn:hover {
+  opacity: 0.9;
+}
+
+/* Custom Scrollbar configuration for history component lists */
+.history-feed::-webkit-scrollbar {
+  width: 6px;
+}
+.history-feed::-webkit-scrollbar-track {
+  background: transparent;
+}
+.history-feed::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 999px;
+}
+
+/* ==========================================================================
+   🖥️ Advanced Media Query Overrides for Wide PC Screen Layouts
+   ========================================================================== */
+@media (min-width: 768px) {
+  body {
+    padding: 40px;
+  }
+
+  .dashboard-grid {
+    flex-direction: row; /* Converts structural stacked divs into an asymmetric horizontal row grid */
+    align-items: flex-start;
+  }
+
+  .card {
+    flex: 1; /* Main Input form occupies half the widescreen grid size footprint */
+    min-width: 440px;
+  }
+
+  .dashboard-sidebar {
+    width: 440px; /* Sidebar stays anchored at structural proportions alongside card layouts */
+  }
+}

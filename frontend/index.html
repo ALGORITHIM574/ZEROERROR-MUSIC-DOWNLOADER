@@ -41,6 +41,46 @@
           <p class="status-text"></p>
         </div>
       </section>
+      <!-- Inside your <main class="downloader-container"> block -->
+      <div class="dashboard-grid">
+        <!-- Left Side Component Panel -->
+        <section class="card">
+          <!-- Keep your existing downloadForm elements completely identical here -->
+        </section>
+
+        <!-- New Right Side Dashboard Panel (Adapts for PC screens) -->
+        <aside class="dashboard-sidebar">
+          <!-- Real-time Storage Monitor Component -->
+          <div class="storage-card">
+            <div class="storage-header">
+              <span class="storage-title">Account Storage Allocation</span>
+              <span class="storage-value" id="storageDisplay"
+                >0.00 MB / 1000 MB</span
+              >
+            </div>
+            <div class="progress-track">
+              <div class="progress-bar" id="storageProgressBar"></div>
+            </div>
+            <p class="storage-alert-text" id="storageAlertMessage">
+              Using Free Tier space. Reach 100% capacity to trigger plan
+              options.
+            </p>
+          </div>
+
+          <!-- Active Cloud Link Output Delivery Feed -->
+          <div class="storage-card">
+            <h3 class="storage-title" style="margin-bottom: 16px">
+              Available Cloud Downloads
+            </h3>
+            <div class="history-feed" id="videoHistoryFeed">
+              <!-- New items injected here via javascript runtimes automatically -->
+              <p class="storage-alert-text" id="emptyFeedText">
+                No active media tasks logged inside this account session yet.
+              </p>
+            </div>
+          </div>
+        </aside>
+      </div>
     </main>
 
     <script src="script.js"></script>
