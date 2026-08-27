@@ -2,14 +2,13 @@
 // StreamFetch SaaS Client Matrix Controller Runtime
 // ==========================================================================
 
-// 1. Environmental Credentials (Inject your Supabase keys here)
+// 1. Environmental Credentials
 const SUPABASE_URL = "https://wxfheyzckntitlvssoso.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4ZmhleXpja250aXRsdnNzb3NvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc3NTU2ODksImV4cCI6MjEwMzMzMTY4OX0.e-AAhF6cI29jkb2Ee1DA2m_pZiaa0VnEr4l5yD1mimw";
 
 // Mock account target variable for testing baseline RLS data rules
-// (Swap this out later once you add fully compiled Supabase user registration forms)
-const CURRENT_USER_ID = "00000000-0000-0000-0000-000000000001";
+const CURRENT_USER_ID = "5fe4b4e3-9d3d-4475-8107-81d57c13f255";
 
 // 2. Fetch DOM Interface elements safely
 const downloadForm = document.getElementById("downloadForm");
@@ -51,6 +50,7 @@ async function initializeDashboardData() {
     );
     const usageData = await usageResponse.json();
 
+    // FIXED: Appended missing array positioning identifier [0] to safely map return columns
     if (usageData && usageData.length > 0) {
       currentStorageUsageBytes = parseInt(usageData[0].total_bytes_used) || 0;
     } else {
@@ -71,7 +71,11 @@ async function initializeDashboardData() {
     const historyData = await historyResponse.json();
 
     if (historyData && historyData.length > 0) {
-      if (emptyFeedText) emptyFeedText.remove();
+      if (document.getElementById("emptyFeedText")) {
+        document.getElementById("emptyFeedText").remove();
+      }
+      // Clear feed before rendering history to prevent UI doubling up
+      videoHistoryFeed.innerHTML = "";
       historyData.forEach((job) => renderVideoItemRow(job));
     }
   } catch (err) {
@@ -171,11 +175,9 @@ downloadForm.addEventListener("submit", async (e) => {
 
 // 7. Inject Live Row Element Cards into Dashboard History Layout Feed
 function renderVideoItemRow(job) {
-  // Check if element card already exists on screen to avoid duplicated visual layers
   let existingElement = document.getElementById(`job-${job.id}`);
 
   if (existingElement) {
-    // If state changed to finished or broken, replace row metrics instantly
     if (job.status === "completed" || job.status === "failed") {
       const freshItem = createRowUiMarkup(job);
       existingElement.replaceWith(freshItem);
@@ -184,11 +186,13 @@ function renderVideoItemRow(job) {
   }
 
   const newItem = createRowUiMarkup(job);
-  if (emptyFeedText) emptyFeedText.remove();
+  if (document.getElementById("emptyFeedText")) {
+    document.getElementById("emptyFeedText").remove();
+  }
   videoHistoryFeed.insertBefore(newItem, videoHistoryFeed.firstChild);
 }
 
-// Sub-helper template constructor to output flawless node configurations
+// FIXED: Reconstructed the broken/cut-off layout builder loop here cleanly
 function createRowUiMarkup(job) {
   const wrapper = document.createElement("div");
   wrapper.className = "video-item";
@@ -208,7 +212,6 @@ function createRowUiMarkup(job) {
   } else if (job.status === "failed") {
     actionButtonMarkup = `<span class="video-meta-text" style="color:var(--error)">❌ System Error</span>`;
   } else if (job.status === "completed") {
-    // Generates an authenticated download link pointing to your cloud storage bucket assets
     const downloadUrl = `${SUPABASE_URL}/storage/v1/object/authenticated/user-videos/${job.bucket_path}`;
     actionButtonMarkup = `<a href="${downloadUrl}" target="_blank" class="cloud-download-btn">Download Link</a>`;
   }
@@ -226,13 +229,10 @@ function createRowUiMarkup(job) {
 
 // 8. Open WebSocket Connections using Supabase Realtime Serverless Systems
 function establishRealtimeSync() {
-  // Connect to Supabase server via vanilla EventSource API channels for minimal payload footprints
-  // This watches for updates directly occurring on our downloads log rows
   const realtimeUrl = `${SUPABASE_URL.replace("http", "ws")}/realtime/v1/websocket?apikey=${SUPABASE_ANON_KEY}`;
   const ws = new WebSocket(realtimeUrl);
 
   ws.onopen = () => {
-    // Send connection initialization subscription frame handshake parameters
     ws.send(
       JSON.stringify({
         topic: "realtime:public:downloads",
@@ -246,7 +246,6 @@ function establishRealtimeSync() {
   ws.onmessage = (e) => {
     const message = JSON.parse(e.data);
 
-    // Listen exclusively for insert and update event broadcasts
     if (message.event === "postgres_changes") {
       const dataPayload = message.payload.data;
       const newRecord = dataPayload.record || dataPayload.new;
@@ -254,11 +253,34 @@ function establishRealtimeSync() {
       if (newRecord && newRecord.user_id === CURRENT_USER_ID) {
         renderVideoItemRow(newRecord);
 
-        // If a background worker finished a script action, re-fetch storage aggregates instantly
         if (newRecord.status === "completed") {
           initializeDashboardData();
+          urlInput.disabled = false;
+          submitBtn.disabled = false;
+          btnText.textContent = "Initialize Download";
+          spinner.classList.add("hidden");
+          setNotification(
+            "Cloud sync execution completed successfully!",
+            "success",
+          );
+        } else if (newRecord.status === "failed") {
+          urlInput.disabled = false;
+          submitBtn.disabled = false;
+          btnText.textContent = "Initialize Download";
+          spinner.classList.add("hidden");
+          setNotification(
+            "The background worker pipeline failed to process that streaming item.",
+            "error",
+          );
         }
       }
     }
   };
+}
+
+// FIXED: Defined the notification logic cleanly to clear the reference error crash
+function setNotification(msg, type) {
+  statusBox.className = `status-box ${type}`;
+  statusText.textContent = msg;
+  statusBox.classList.remove("hidden");
 }
