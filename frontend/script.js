@@ -212,7 +212,7 @@ function createRowUiMarkup(job) {
   } else if (job.status === "failed") {
     actionButtonMarkup = `<span class="video-meta-text" style="color:var(--error)">❌ System Error</span>`;
   } else if (job.status === "completed") {
-    const downloadUrl = `${SUPABASE_URL}/storage/v1/object/authenticated/user-videos/${job.bucket_path}`;
+    const downloadUrl = job.bucket_path; // Points directly to your clean, signed cloud download address!
     actionButtonMarkup = `<a href="${downloadUrl}" target="_blank" class="cloud-download-btn">Download Link</a>`;
   }
 
