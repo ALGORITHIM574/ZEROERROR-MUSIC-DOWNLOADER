@@ -17,35 +17,32 @@
         </p>
       </header>
 
-      <section class="card">
-        <form id="downloadForm" novalidate>
-          <div class="input-group">
-            <label for="videoUrl">Paste Video URL</label>
-            <input
-              type="url"
-              id="videoUrl"
-              placeholder="https://youtube.com..."
-              required
-              autocomplete="off"
-            />
-          </div>
-
-          <button type="submit" id="submitBtn">
-            <span class="btn-text">Initialize Download</span>
-            <span class="spinner hidden"></span>
-          </button>
-        </form>
-
-        <div id="statusMessage" class="status-box hidden" role="alert">
-          <span class="status-icon"></span>
-          <p class="status-text"></p>
-        </div>
-      </section>
-      <!-- Inside your <main class="downloader-container"> block -->
+      <!-- FIXED: Combined elements inside your active horizontal responsive grid layout -->
       <div class="dashboard-grid">
-        <!-- Left Side Component Panel -->
+        <!-- Left Side Component Panel (The Form submission interface wrapper) -->
         <section class="card">
-          <!-- Keep your existing downloadForm elements completely identical here -->
+          <form id="downloadForm" novalidate>
+            <div class="input-group">
+              <label for="videoUrl">Paste Video URL</label>
+              <input
+                type="url"
+                id="videoUrl"
+                placeholder="https://youtube.com..."
+                required
+                autocomplete="off"
+              />
+            </div>
+
+            <button type="submit" id="submitBtn">
+              <span class="btn-text">Initialize Download</span>
+              <span class="spinner hidden"></span>
+            </button>
+          </form>
+
+          <div id="statusMessage" class="status-box hidden" role="alert">
+            <span class="status-icon"></span>
+            <p class="status-text"></p>
+          </div>
         </section>
 
         <!-- New Right Side Dashboard Panel (Adapts for PC screens) -->
@@ -73,7 +70,6 @@
               Available Cloud Downloads
             </h3>
             <div class="history-feed" id="videoHistoryFeed">
-              <!-- New items injected here via javascript runtimes automatically -->
               <p class="storage-alert-text" id="emptyFeedText">
                 No active media tasks logged inside this account session yet.
               </p>
