@@ -1,20 +1,15 @@
-const downloadRoutes = require("./src/routes/download.routes");
-app.use(cors());
-app.use(express.json());
-app.use(cors());
-
-app.use(express.json());
-
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
-const downloadRoutes = require("./src/routes/download.routes");
-
 const app = express();
+
+const downloadRoutes = require("./routes/download.routes");
 
 app.use(cors());
 app.use(express.json());
+
+app.use("/downloads", express.static("downloads"));
 
 app.use("/api/download", downloadRoutes);
 
@@ -24,7 +19,7 @@ app.get("/", (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
