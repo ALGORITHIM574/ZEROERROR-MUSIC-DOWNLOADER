@@ -3,82 +3,258 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>StreamFetch — Media Downloader</title>
+
+    <title>Stream Fetch</title>
+
     <link rel="stylesheet" href="frontend/style.css" />
   </head>
+
   <body>
-    <main class="downloader-container">
-      <header class="app-header">
-        <div class="logo-mark">📥</div>
-        <h1>StreamFetch</h1>
-        <p>
-          Download and archive high-quality video content instantly through your
-          background pipeline.
-        </p>
-      </header>
+    <!-- ==============================
+         NAVIGATION
+    =============================== -->
 
-      <!-- FIXED: Combined elements inside your active horizontal responsive grid layout -->
-      <div class="dashboard-grid">
-        <!-- Left Side Component Panel (The Form submission interface wrapper) -->
-        <section class="card">
-          <form id="downloadForm" novalidate>
-            <div class="input-group">
-              <label for="videoUrl">Paste Video URL</label>
-              <input
-                type="url"
-                id="videoUrl"
-                placeholder="https://youtube.com..."
-                required
-                autocomplete="off"
-              />
-            </div>
+    <header class="navbar">
+      <a href="#" class="logo">
+        <span class="logo-mark">▶</span>
+        <span>Stream Fetch</span>
+      </a>
 
-            <button type="submit" id="submitBtn">
-              <span class="btn-text">Initialize Download</span>
-              <span class="spinner hidden"></span>
-            </button>
-          </form>
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#pricing">Pricing</a>
+      </nav>
 
-          <div id="statusMessage" class="status-box hidden" role="alert">
-            <span class="status-icon"></span>
-            <p class="status-text"></p>
-          </div>
-        </section>
+      <div class="nav-actions">
+        <!-- JavaScript will control this later -->
+        <button
+          class="theme-toggle"
+          id="themeToggle"
+          type="button"
+          aria-label="Toggle light and dark mode"
+        >
+          ☀️
+        </button>
 
-        <!-- New Right Side Dashboard Panel (Adapts for PC screens) -->
-        <aside class="dashboard-sidebar">
-          <!-- Real-time Storage Monitor Component -->
-          <div class="storage-card">
-            <div class="storage-header">
-              <span class="storage-title">Account Storage Allocation</span>
-              <span class="storage-value" id="storageDisplay"
-                >0.00 MB / 1000 MB</span
-              >
-            </div>
-            <div class="progress-track">
-              <div class="progress-bar" id="storageProgressBar"></div>
-            </div>
-            <p class="storage-alert-text" id="storageAlertMessage">
-              Using Free Tier space. Reach 100% capacity to trigger plan
-              options.
-            </p>
-          </div>
+        <button class="login-btn" type="button">Log in</button>
 
-          <!-- Active Cloud Link Output Delivery Feed -->
-          <div class="storage-card">
-            <h3 class="storage-title" style="margin-bottom: 16px">
-              Available Cloud Downloads
-            </h3>
-            <div class="history-feed" id="videoHistoryFeed">
-              <p class="storage-alert-text" id="emptyFeedText">
-                No active media tasks logged inside this account session yet.
-              </p>
-            </div>
-          </div>
-        </aside>
+        <button class="signup-btn" type="button">Get started</button>
       </div>
+    </header>
+
+    <!-- ==============================
+         MAIN CONTENT
+    =============================== -->
+
+    <main>
+      <!-- HERO -->
+
+      <section class="hero">
+        <div class="hero-content">
+          <div class="badge">
+            <span></span>
+            Fast & simple downloads
+          </div>
+
+          <h1>
+            Download your favorite
+            <span>content.</span>
+          </h1>
+
+          <p class="hero-text">
+            Convert YouTube videos into high-quality audio or video files
+            quickly and easily.
+          </p>
+
+          <!-- DOWNLOADER -->
+
+          <div class="download-card">
+            <div class="input-group">
+              <label for="videoUrl"> YouTube URL </label>
+
+              <div class="input-wrapper">
+                <span class="input-icon"> 🔗 </span>
+
+                <input
+                  type="url"
+                  id="videoUrl"
+                  placeholder="Paste YouTube URL here..."
+                />
+              </div>
+            </div>
+
+            <div class="download-options">
+              <div class="format-options">
+                <button
+                  class="format-btn active"
+                  id="audioBtn"
+                  type="button"
+                  data-type="audio"
+                >
+                  <span class="format-icon"> 🎵 </span>
+
+                  <span>
+                    <strong>Audio</strong>
+                    <small>MP3</small>
+                  </span>
+                </button>
+
+                <button
+                  class="format-btn"
+                  id="videoBtn"
+                  type="button"
+                  data-type="video"
+                >
+                  <span class="format-icon"> 🎬 </span>
+
+                  <span>
+                    <strong>Video</strong>
+                    <small>MP4</small>
+                  </span>
+                </button>
+              </div>
+
+              <button class="download-btn" id="downloadBtn" type="button">
+                <span class="button-text"> Download </span>
+
+                <span class="button-icon"> ↓ </span>
+              </button>
+            </div>
+
+            <!-- JavaScript will use this later -->
+
+            <div class="status-box hidden" id="statusBox">
+              <span class="status-icon"></span>
+
+              <p class="status-message">Processing your download...</p>
+            </div>
+          </div>
+
+          <p class="supported-text">Currently supporting YouTube</p>
+        </div>
+      </section>
+
+      <!-- ==============================
+             FEATURES
+        =============================== -->
+
+      <section class="features-section" id="features">
+        <div class="section-heading">
+          <span class="section-label"> WHY STREAM FETCH </span>
+
+          <h2>
+            Everything you need.
+            <span>Nothing you don't.</span>
+          </h2>
+        </div>
+
+        <div class="features-grid">
+          <article class="feature-card">
+            <div class="feature-icon">⚡</div>
+
+            <h3>Fast processing</h3>
+
+            <p>Process your download without unnecessary waiting.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon">🎧</div>
+
+            <h3>Audio & video</h3>
+
+            <p>Choose between MP3 audio and MP4 video downloads.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon">🔒</div>
+
+            <h3>Temporary files</h3>
+
+            <p>
+              Files are processed temporarily instead of being permanently
+              stored.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ==============================
+             HOW IT WORKS
+        =============================== -->
+
+      <section class="how-section" id="how-it-works">
+        <div class="section-heading">
+          <span class="section-label"> HOW IT WORKS </span>
+
+          <h2>Three simple steps.</h2>
+        </div>
+
+        <div class="steps">
+          <article class="step">
+            <span class="step-number"> 01 </span>
+
+            <h3>Paste your link</h3>
+
+            <p>Copy a YouTube URL and paste it into Stream Fetch.</p>
+          </article>
+
+          <article class="step">
+            <span class="step-number"> 02 </span>
+
+            <h3>Choose a format</h3>
+
+            <p>Select whether you want audio or video.</p>
+          </article>
+
+          <article class="step">
+            <span class="step-number"> 03 </span>
+
+            <h3>Download</h3>
+
+            <p>Stream Fetch processes the file and provides your download.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ==============================
+             PRICING
+        =============================== -->
+
+      <section class="pricing-section" id="pricing">
+        <div class="section-heading">
+          <span class="section-label"> PRICING </span>
+
+          <h2>Simple plans.</h2>
+
+          <p>Start free and upgrade when you need more.</p>
+        </div>
+
+        <div class="pricing-card">
+          <div>
+            <span class="plan-name"> FREE </span>
+
+            <h3>KSh 0</h3>
+
+            <p>Try Stream Fetch before upgrading.</p>
+          </div>
+
+          <button class="pricing-btn" type="button">Get started</button>
+        </div>
+      </section>
     </main>
 
+    <!-- ==============================
+         FOOTER
+    =============================== -->
+
+    <footer class="footer">
+      <div class="footer-logo">Stream Fetch</div>
+
+      <p>Fast downloads. Simple experience.</p>
+
+      <span> © 2026 Stream Fetch </span>
+    </footer>
     <script src="frontend/script.js"></script>
   </body>
 </html>
