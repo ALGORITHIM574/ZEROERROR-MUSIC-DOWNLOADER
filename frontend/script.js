@@ -16,11 +16,28 @@ videoBtn.addEventListener("click", () => {
   videoBtn.classList.add("active");
   audioBtn.classList.remove("active");
 });
-downloadBtn.addEventListener("click", () => {
+downloadBtn.addEventListener("click", async () => {
   console.log("DOWNLOAD BUTTON CLICKED");
   const url = videoUrl.value;
   console.log(url);
   const type = selectedType;
   console.log("URL:", url);
   console.log("TYPE:", type);
+
+  const response = await fetch("http://localhost:3001/api/download", {
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json",
+    },
+
+    body: JSON.stringify({
+      url: url,
+      type: type,
+    }),
+  });
+
+  console.log(response);
+  const data = await response.json();
+  console.log(data);
 });
