@@ -1,3 +1,4 @@
+console.log("SCRIPT LOADED");
 const videoUrl = document.getElementById("videoUrl");
 const audioBtn = document.getElementById("audioBtn");
 const videoBtn = document.getElementById("videoBtn");
@@ -11,7 +12,7 @@ audioBtn.addEventListener("click", () => {
   videoBtn.classList.remove("active");
 });
 videoBtn.addEventListener("click", () => {
-  console.log("AUDIO BUTTON CLICKED");
+  console.log("VIDEO CLICKED");
   selectedType = "video";
   videoBtn.classList.add("active");
   audioBtn.classList.remove("active");
