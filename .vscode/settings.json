@@ -1,0 +1,13 @@
+// {
+//   "liveServer.settings.port": 5501
+// }
+{
+  "liveServer.settings.ignoreFiles": [
+    // "**/downloads/**",
+    "**/frontend/downloads/**",
+    "**/*.mp4",
+    "**/*.mp3",
+    "**/node_modules/**"
+  ],
+  "liveServer.settings.port": 5501
+}

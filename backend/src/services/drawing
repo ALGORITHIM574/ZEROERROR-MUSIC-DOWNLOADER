@@ -1,0 +1,36 @@
+Frontend
+   ↓
+download.routes.js
+   ↓
+download.controller.js
+   ↓
+downloader.service.js  ← THIS FILE
+   ↓
+yt-dlp + FFmpeg
+   ↓
+final MP4/MP3
+
+
+
+You click Download
+        ↓
+POST /api/download
+        ↓
+downloadController
+        ↓
+download(url, type)
+        ↓
+yt-dlp
+        ↓
+video + audio
+        ↓
+FFmpeg merges them
+        ↓
+MP4 saved in downloads/
+        ↓
+controller returns:
+{
+  message: "Download completed",
+  fileName: "...mp4",
+  downloadUrl: "/downloads/...mp4"
+}
