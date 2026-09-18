@@ -34,3 +34,39 @@ controller returns:
   fileName: "...mp4",
   downloadUrl: "/downloads/...mp4"
 }
+
+Browser
+   │
+   │ POST /api/download
+   ↓
+Backend
+   │
+   │ starts yt-dlp
+   ↓
+yt-dlp downloads
+   │
+   │ waits...
+   ↓
+Backend
+   │
+   │ "Download completed"
+   ↓
+Browser
+
+PROGRESS
+
+Browser
+   │
+   │ "Start this download"
+   ↓
+Backend
+   │
+   │ starts yt-dlp
+   ↓
+yt-dlp
+   │
+   ├── 10% ──────→ Browser
+   ├── 27% ──────→ Browser
+   ├── 51% ──────→ Browser
+   ├── 78% ──────→ Browser
+   └── 100% ─────→ Browser
