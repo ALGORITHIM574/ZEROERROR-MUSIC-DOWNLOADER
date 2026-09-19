@@ -56,7 +56,19 @@ downloadBtn.addEventListener("click", async (e) => {
     });
     const data = await response.json();
     console.log("server Response", data);
+    const downloadId = data.downloadId;
+    console.log("DOWNLOAD ID:", downloadId);
+    await checkProgress(downloadId);
   } catch (error) {
     console.error("Fetch failed error layout reset:", error);
   }
 });
+async function checkProgress(downloadId) {
+  const response = await fetch(
+    `http://localhost:3001/api/download/progress/${downloadId}`,
+  );
+
+  const data = await response.json();
+
+  console.log("PROGRESS RESPONSE:", data);
+}

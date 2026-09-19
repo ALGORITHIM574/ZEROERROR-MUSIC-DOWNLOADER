@@ -1,4 +1,4 @@
-const { download } = require("../services/downloader.service");
+const { download, progressStore } = require("../services/downloader.service");
 
 const downloadController = async (req, res) => {
   const { url, type } = req.body;
@@ -35,12 +35,11 @@ const downloadController = async (req, res) => {
       });
     }
 
-    const result = await download(url, type);
+    const result = download(url, type);
 
     res.json({
-      message: "Download completed",
-      fileName: result.fileName,
-      downloadUrl: `/downloads/${result.fileName}`,
+      message: "Download started",
+      downloadId: result.downloadId,
     });
   } catch (error) {
     console.error(error);
@@ -51,7 +50,24 @@ const downloadController = async (req, res) => {
     });
   }
 };
+const getProgress = (req, res) => {
+  const { downloadId } = req.params;
+
+  const progress = progressStore[downloadId];
+
+  if (progress === undefined) {
+    return res.status(404).json({
+      error: "Download not found",
+    });
+  }
+
+  res.json({
+    downloadId,
+    progress,
+  });
+};
 
 module.exports = {
   download: downloadController,
+  getProgress,
 };
