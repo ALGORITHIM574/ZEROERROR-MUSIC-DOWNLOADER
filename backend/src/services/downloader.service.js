@@ -14,6 +14,9 @@ const download = (url, type) => {
   }
 
   const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  progressStore[fileName] = 0;
+  console.log("SERVER PID:", process.pid);
+  console.log("CREATED PROGRESS ID:", fileName);
 
   const outputTemplate = path.join(downloadsDir, `${fileName}.%(ext)s`);
 
@@ -21,6 +24,8 @@ const download = (url, type) => {
 
   if (type === "audio") {
     args = [
+      "-f",
+      "140",
       "-x",
       "--audio-format",
       "mp3",
@@ -62,6 +67,7 @@ const download = (url, type) => {
   child.stdout.on("data", (data) => {
     const output = data.toString();
 
+    console.log("STDOUT:", output);
     console.log("RAW OUTPUT:", JSON.stringify(output));
 
     const match = output.match(/(\d+(?:\.\d+)?)%/);
@@ -73,10 +79,10 @@ const download = (url, type) => {
 
       progressStore[fileName] = percentage;
 
+      console.log("PROGRESS STORE UPDATED:", progressStore[fileName]);
       console.log("PROGRESS:", percentage);
     }
   });
-
   // yt-dlp has finished
   child.on("close", (code) => {
     console.log("yt-dlp finished with code:", code);

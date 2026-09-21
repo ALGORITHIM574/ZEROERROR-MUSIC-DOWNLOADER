@@ -99,3 +99,14 @@ yt-dlp
                     │   Browser    │
                     │   57.8%      │
                     └──────────────┘
+                    checkProgress(id)
+       ↓
+get progress
+       ↓
+if progress < 100
+       ↓
+check again after 1 second
+       ↓
+if progress === 100
+       ↓
+STOP

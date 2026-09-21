@@ -54,6 +54,9 @@ const getProgress = (req, res) => {
   const { downloadId } = req.params;
 
   const progress = progressStore[downloadId];
+  console.log("PROGRESS REQUEST ID:", downloadId);
+  console.log("PROGRESS STORE VALUE:", progress);
+  console.log("SERVER PID:", process.pid);
 
   if (progress === undefined) {
     return res.status(404).json({

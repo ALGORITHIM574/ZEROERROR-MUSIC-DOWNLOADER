@@ -56,19 +56,56 @@ downloadBtn.addEventListener("click", async (e) => {
     });
     const data = await response.json();
     console.log("server Response", data);
+
     const downloadId = data.downloadId;
     console.log("DOWNLOAD ID:", downloadId);
+
     await checkProgress(downloadId);
   } catch (error) {
     console.error("Fetch failed error layout reset:", error);
   }
 });
+// async function checkProgress(downloadId) {
+//   const response = await fetch(
+//     `http://localhost:3001/api/download/progress/${downloadId}`,
+//   );
+
+//   const data = await response.json();
+
+//   console.log("PROGRESS RESPONSE:", data);
+//   if (data.progress < 100) {
+//     console.log("CHECKING AGAIN...");
+//     setTimeout(() => {
+//       checkProgress(downloadId);
+//     }, 1000);
+//   }
+// }
 async function checkProgress(downloadId) {
-  const response = await fetch(
-    `http://localhost:3001/api/download/progress/${downloadId}`,
-  );
+  console.log("CHECK PROGRESS STARTED:", downloadId);
 
-  const data = await response.json();
+  try {
+    console.log("ABOUT TO FETCH PROGRESS");
 
-  console.log("PROGRESS RESPONSE:", data);
+    const response = await fetch(
+      `http://localhost:3001/api/download/progress/${downloadId}`,
+    );
+
+    console.log("PROGRESS FETCH COMPLETED");
+
+    const data = await response.json();
+
+    console.log("PROGRESS RESPONSE:", data);
+
+    if (data.progress < 100) {
+      console.log("CHECKING AGAIN...");
+
+      setTimeout(() => {
+        checkProgress(downloadId);
+      }, 1000);
+    } else {
+      console.log("DOWNLOAD REACHED 100%");
+    }
+  } catch (error) {
+    console.error("PROGRESS FETCH ERROR:", error);
+  }
 }
