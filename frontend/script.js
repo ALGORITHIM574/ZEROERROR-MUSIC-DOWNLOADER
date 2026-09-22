@@ -109,3 +109,14 @@ async function checkProgress(downloadId) {
     console.error("PROGRESS FETCH ERROR:", error);
   }
 }
+async function getDownloadFile(downloadId) {
+  console.log("GETTING DOWNLOAD FILE:", downloadId);
+
+  const response = await fetch(
+    `http://localhost:3001/api/download/file/${downloadId}`,
+  );
+
+  const data = await response.json();
+
+  console.log("DOWNLOAD FILE RESPONSE:", data);
+}

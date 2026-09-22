@@ -110,3 +110,17 @@ check again after 1 second
 if progress === 100
        ↓
 STOP
+
+User clicks Download
+        ↓
+POST /api/download
+        ↓
+Download starts
+        ↓
+yt-dlp creates file
+        ↓
+Server detects completed file
+        ↓
+Server gives frontend file URL
+        ↓
+User clicks/downloads file

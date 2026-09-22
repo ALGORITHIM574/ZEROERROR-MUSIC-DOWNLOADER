@@ -3,6 +3,7 @@ const path = require("path");
 const fs = require("fs");
 
 const progressStore = {};
+const downloadStore = {};
 
 const ytDlpPath = path.join(__dirname, "../../../yt-dlp.exe");
 
@@ -102,7 +103,7 @@ const download = (url, type) => {
       console.error("Downloaded file could not be found");
       return;
     }
-
+    downloadStore[fileName] = downloadedFile;
     console.log("Download completed:", downloadedFile);
   });
 
@@ -120,4 +121,5 @@ const download = (url, type) => {
 module.exports = {
   download,
   progressStore,
+  downloadStore,
 };

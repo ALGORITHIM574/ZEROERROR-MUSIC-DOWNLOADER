@@ -1,4 +1,8 @@
-const { download, progressStore } = require("../services/downloader.service");
+const {
+  download,
+  progressStore,
+  downloadStore,
+} = require("../services/downloader.service");
 
 const downloadController = async (req, res) => {
   const { url, type } = req.body;
@@ -70,7 +74,24 @@ const getProgress = (req, res) => {
   });
 };
 
+const getDownload = (req, res) => {
+  const { downloadId } = req.params;
+
+  const file = downloadStore[downloadId];
+
+  if (!file) {
+    return res.status(404).json({
+      error: "Download not completed",
+    });
+  }
+
+  res.json({
+    downloadId,
+    file,
+  });
+};
 module.exports = {
   download: downloadController,
   getProgress,
+  getDownload,
 };
