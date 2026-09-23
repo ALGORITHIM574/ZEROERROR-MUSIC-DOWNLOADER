@@ -104,6 +104,7 @@ const download = (url, type) => {
       return;
     }
     downloadStore[fileName] = downloadedFile;
+    console.log("DOWNLOAD STORE:", downloadStore);
     console.log("Download completed:", downloadedFile);
   });
 

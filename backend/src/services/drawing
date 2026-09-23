@@ -124,3 +124,50 @@ Server detects completed file
 Server gives frontend file URL
         ↓
 User clicks/downloads file
+
+Frontend
+   ↓
+POST /api/download
+   ↓
+Controller
+   ↓
+Downloader service
+   ↓
+yt-dlp
+   ↓
+File created
+   ↓
+downloadStore
+   ↓
+GET /api/download/file/:downloadId
+   ↓
+File information returned ✅
+
+downloader.service.js
+    → downloads the file
+    → remembers the filename
+
+download.controller.js
+    → receives the request
+    → finds the file
+    → sends the file to the browser
+
+    YouTube URL
+    ↓
+POST /api/download
+    ↓
+Controller validates URL + type
+    ↓
+Downloader service
+    ↓
+yt-dlp downloads the media
+    ↓
+downloadStore remembers the file
+    ↓
+GET /api/download/file/:downloadId
+    ↓
+res.download()
+    ↓
+Browser downloads the MP3
+    ↓
+User opens it → plays ✅

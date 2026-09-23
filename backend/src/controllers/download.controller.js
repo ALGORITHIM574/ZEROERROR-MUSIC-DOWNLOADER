@@ -1,3 +1,4 @@
+const path = require("path");
 const {
   download,
   progressStore,
@@ -84,11 +85,9 @@ const getDownload = (req, res) => {
       error: "Download not completed",
     });
   }
-
-  res.json({
-    downloadId,
-    file,
-  });
+  const downloadsDir = path.join(__dirname, "../downloads");
+  const filePath = path.join(downloadsDir, file);
+  res.download(filePath);
 };
 module.exports = {
   download: downloadController,
