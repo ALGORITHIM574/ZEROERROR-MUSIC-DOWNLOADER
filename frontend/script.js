@@ -8,7 +8,7 @@ const downloadFileBtn = document.getElementById("downloadFileBtn");
 const statusBox = document.getElementById("statusBox");
 
 let selectedType = null;
-let currentDownloadId = null;
+let currentDownloadId = sessionStorage.getItem("currentDownloadId");
 
 // AUDIO BUTTON
 audioBtn.addEventListener("click", (e) => {
@@ -16,7 +16,9 @@ audioBtn.addEventListener("click", (e) => {
   e.stopPropagation();
 
   console.log("AUDIO BUTTON CLICKED");
+
   selectedType = "audio";
+
   audioBtn.classList.add("active");
   videoBtn.classList.remove("active");
 });
@@ -27,7 +29,9 @@ videoBtn.addEventListener("click", (e) => {
   e.stopPropagation();
 
   console.log("VIDEO BUTTON CLICKED");
+
   selectedType = "video";
+
   videoBtn.classList.add("active");
   audioBtn.classList.remove("active");
 });
@@ -63,25 +67,31 @@ downloadBtn.addEventListener("click", async (e) => {
     // SEND DOWNLOAD REQUEST TO SERVER
     const response = await fetch("http://localhost:3001/api/download", {
       method: "POST",
-
       headers: {
         "Content-Type": "application/json",
       },
-
       body: JSON.stringify({
         url: url,
         type: type,
       }),
     });
 
+    console.log("FETCH COMPLETED");
+    console.log("RESPONSE STATUS:", response.status);
+
     const data = await response.json();
 
     console.log("SERVER RESPONSE:", data);
+    console.log("ABOUT TO GET DOWNLOAD ID");
 
     // GET DOWNLOAD ID
     const downloadId = data.downloadId;
-    currentDownloadId = downloadId;
+
     console.log("DOWNLOAD ID:", downloadId);
+
+    currentDownloadId = downloadId;
+    sessionStorage.setItem("currentDownloadId", downloadId);
+    console.log("CURRENT ID AFTER ASSIGNMENT:", currentDownloadId);
 
     // START CHECKING PROGRESS
     await checkProgress(downloadId);
@@ -89,10 +99,23 @@ downloadBtn.addEventListener("click", async (e) => {
     console.error("FETCH ERROR:", error);
   }
 });
-downloadFileBtn.addEventListener("click", () => {
-  console.log("DOWNLOAD FILE BUTTON CLICKED");
 
-  window.location.href = `http://localhost:3001/api/download/file/${currentDownloadId}`;
+// DOWNLOAD FILE BUTTON
+downloadFileBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  const downloadId = sessionStorage.getItem("currentDownloadId");
+
+  console.log("DOWNLOAD FILE BUTTON CLICKED");
+  console.log("DOWNLOAD ID:", downloadId);
+
+  if (!downloadId) {
+    console.error("NO DOWNLOAD ID AVAILABLE");
+    return;
+  }
+
+  window.location.href = `http://localhost:3001/api/download/file/${downloadId}`;
 });
 
 // CHECK DOWNLOAD PROGRESS
@@ -108,6 +131,12 @@ async function checkProgress(downloadId) {
 
     console.log("PROGRESS RESPONSE:", data);
 
+    // HANDLE SERVER ERROR
+    if (data.error) {
+      console.error("PROGRESS ERROR:", data.error);
+      return;
+    }
+
     // DOWNLOAD NOT FINISHED
     if (data.progress < 100) {
       console.log("CHECKING AGAIN...");
@@ -115,11 +144,16 @@ async function checkProgress(downloadId) {
       setTimeout(() => {
         checkProgress(downloadId);
       }, 1000);
-    } else {
-      console.log("DOWNLOAD REACHED 100%");
-      downloadFileBtn.hidden = false;
-      console.log("DOWNLOAD FILE BUTTON IS NOW VISIBLE");
+
+      return;
     }
+
+    // DOWNLOAD FINISHED
+    console.log("DOWNLOAD REACHED 100%");
+
+    downloadFileBtn.hidden = false;
+
+    console.log("DOWNLOAD FILE BUTTON IS NOW VISIBLE");
   } catch (error) {
     console.error("PROGRESS FETCH ERROR:", error);
   }
