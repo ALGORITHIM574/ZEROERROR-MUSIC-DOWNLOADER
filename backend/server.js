@@ -5,6 +5,7 @@ const path = require("path");
 require("dotenv").config();
 
 const downloadRoutes = require("./src/routes/download.routes");
+const authRoutes = require("./src/routes/auth.routes");
 
 const app = express();
 
@@ -20,6 +21,7 @@ console.log(
 app.use("/downloads", express.static(path.join(__dirname, "downloads")));
 
 app.use("/api/download", downloadRoutes);
+app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.json({

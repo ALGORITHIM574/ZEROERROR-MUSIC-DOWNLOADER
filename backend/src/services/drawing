@@ -171,3 +171,22 @@ res.download()
 Browser downloads the MP3
     ↓
 User opens it → plays ✅
+
+signup
+Frontend signup form
+        ↓
+POST /api/auth/signup
+        ↓
+auth.routes.js
+        ↓
+signup controller
+        ↓
+Validate name/email/password
+        ↓
+Check whether email already exists
+        ↓
+Hash password with bcrypt
+        ↓
+Insert user into MySQL
+        ↓
+Send success response

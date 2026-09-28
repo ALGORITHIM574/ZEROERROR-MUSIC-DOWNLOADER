@@ -1,9 +1,19 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
+const pool = require("./config/database");
 
 const app = express();
-
+// test to the connection
+pool
+  .getConnection()
+  .then((connection) => {
+    console.log("MySQL connection successful");
+    connection.release();
+  })
+  .catch((error) => {
+    console.error("MySQL connection failed:", error.message);
+  });
 const downloadRoutes = require("./routes/download.routes");
 
 app.use(cors());
