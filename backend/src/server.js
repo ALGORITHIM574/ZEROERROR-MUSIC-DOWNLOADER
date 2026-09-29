@@ -15,6 +15,7 @@ pool
     console.error("MySQL connection failed:", error.message);
   });
 const downloadRoutes = require("./routes/download.routes");
+const authRoutes = require("./routes/auth.routes");
 
 app.use(cors());
 app.use(express.json());
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use("/downloads", express.static("downloads"));
 
 app.use("/api/download", downloadRoutes);
+app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.json({
