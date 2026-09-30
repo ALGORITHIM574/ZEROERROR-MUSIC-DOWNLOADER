@@ -190,3 +190,24 @@ Hash password with bcrypt
 Insert user into MySQL
         ↓
 Send success response
+
+
+Signup form
+    ↓
+POST /api/auth/signup
+    ↓
+Express route
+    ↓
+Auth controller
+    ↓
+Validate fields
+    ↓
+Validate email
+    ↓
+Validate password
+    ↓
+bcrypt hash
+    ↓
+MySQL INSERT
+    ↓
+users table ✅
