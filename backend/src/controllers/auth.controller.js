@@ -39,7 +39,11 @@ const signup = async (req, res) => {
     });
   } catch (error) {
     console.error("SIGNUP ERROR:", error);
-
+    if (error.code === "ER_DUP_ENTRY") {
+      return res.status(409).json({
+        error: "Email already registered",
+      });
+    }
     return res.status(500).json({
       error: "Something went wrong while creating your account",
     });

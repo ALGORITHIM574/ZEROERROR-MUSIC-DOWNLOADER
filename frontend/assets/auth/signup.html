@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Your Account</title>
+    <link href="https://googleapis.com" rel="stylesheet" />
+    <link rel="stylesheet" href="/frontend/assets/auth/css/signup.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- Visual Side -->
+      <div class="visual-side">
+        <div class="brand-logo">Steam-fetch.</div>
+        <div class="visual-text">
+          <h1>Discover the next generation of digital creativity.</h1>
+          <p>
+            Join over 20,000+ creators and developers scaling their digital
+            environments with beautiful interactions.
+          </p>
+        </div>
+      </div>
+
+      <!-- Form Side -->
+      <div class="form-side">
+        <div class="form-wrapper">
+          <div class="form-header">
+            <h2>Create account</h2>
+            <p>Already have an account? <a href="loginpage.html">Log in</a></p>
+          </div>
+
+          <form id="signupForm">
+            <div class="input-group">
+              <label for="name">Full Name</label>
+              <input
+                type="text"
+                id="name"
+                name="full_name"
+                placeholder="John Doe"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <label for="email">Email Address</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="you@example.com"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <label for="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="At least 8 characters"
+                required
+              />
+            </div>
+
+            <button type="submit" class="btn-submit">Get Started</button>
+          </form>
+
+          <div class="divider">or sign up with</div>
+
+          <button class="btn-google">
+            <img src="https://svgrepo.com" alt="Google" />
+            Sign up with Google
+          </button>
+        </div>
+      </div>
+    </div>
+    <script src="/frontend/assets/js/auth.js"></script>
+  </body>
+</html>
