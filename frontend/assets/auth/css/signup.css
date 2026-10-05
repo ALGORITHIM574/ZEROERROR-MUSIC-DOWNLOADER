@@ -173,6 +173,12 @@ body {
 .btn-submit:active {
   transform: translateY(0);
 }
+#signupMessage {
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
 
 /* Divider */
 .divider {
