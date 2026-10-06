@@ -211,3 +211,35 @@ bcrypt hash
 MySQL INSERT
     ↓
 users table ✅
+
+handlesubmit()
+│
+├── preventDefault
+├── collect signup data
+│
+└── try
+    ├── fetch
+    ├── response.json
+    └── status handling
+│
+└── catch
+    └── connection error
+
+signupForm.addEventListener(...)
+
+
+User
+ ↓
+email + password
+ ↓
+Express
+ ↓
+find user in MySQL
+ ↓
+retrieve password_hash
+ ↓
+bcrypt compares passwords
+ ↓
+authenticated ✓
+ ↓
+create login session/token
