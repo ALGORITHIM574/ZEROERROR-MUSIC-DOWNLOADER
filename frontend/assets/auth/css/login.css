@@ -207,6 +207,13 @@ body {
   transform: translateY(0);
 }
 
+#loginMessage {
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 /* Divider */
 .divider {
   display: flex;
