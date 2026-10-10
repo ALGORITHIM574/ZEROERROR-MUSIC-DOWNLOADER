@@ -1,3 +1,4 @@
+const authMiddleware = require("../middleware/auth.middleware");
 const express = require("express");
 const {
   download,
