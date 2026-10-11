@@ -8,8 +8,8 @@ const {
 
 const router = express.Router();
 
-router.post("/", download);
-router.get("/progress/:downloadId", getProgress);
-router.get("/file/:downloadId", getDownload);
+router.post("/", authMiddleware, download);
+router.get("/progress/:downloadId", authMiddleware, getProgress);
+router.get("/file/:downloadId", authMiddleware, getDownload);
 
 module.exports = router;

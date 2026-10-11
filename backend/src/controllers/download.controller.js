@@ -3,6 +3,7 @@ const {
   download,
   progressStore,
   downloadStore,
+  downloadOwners,
 } = require("../services/downloader.service");
 
 const downloadController = async (req, res) => {
@@ -41,6 +42,7 @@ const downloadController = async (req, res) => {
     }
 
     const result = download(url, type);
+    downloadOwners[result.downloadId] = req.user.user_id;
 
     res.json({
       message: "Download started",
@@ -56,23 +58,29 @@ const downloadController = async (req, res) => {
   }
 };
 const getProgress = (req, res) => {
-  const { downloadId } = req.params;
+  if (req.user.user_id === downloadOwners[downloadId]) {
+    const { downloadId } = req.params;
 
-  const progress = progressStore[downloadId];
-  console.log("PROGRESS REQUEST ID:", downloadId);
-  console.log("PROGRESS STORE VALUE:", progress);
-  console.log("SERVER PID:", process.pid);
+    const progress = progressStore[downloadId];
+    console.log("PROGRESS REQUEST ID:", downloadId);
+    console.log("PROGRESS STORE VALUE:", progress);
+    console.log("SERVER PID:", process.pid);
 
-  if (progress === undefined) {
-    return res.status(404).json({
-      error: "Download not found",
+    if (progress === undefined) {
+      return res.status(404).json({
+        error: "Download not found",
+      });
+    }
+
+    res.json({
+      downloadId,
+      progress,
+    });
+  } else {
+    return status(400).json({
+      error: "NOT AUTHORIZED",
     });
   }
-
-  res.json({
-    downloadId,
-    progress,
-  });
 };
 
 const getDownload = (req, res) => {
