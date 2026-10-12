@@ -4,6 +4,7 @@ const fs = require("fs");
 
 const progressStore = {};
 const downloadStore = {};
+const downloadOwners = {};
 
 const ytDlpPath = path.join(__dirname, "../../../yt-dlp.exe");
 
@@ -123,4 +124,5 @@ module.exports = {
   download,
   progressStore,
   downloadStore,
+  downloadOwners,
 };
