@@ -4,6 +4,7 @@ const {
   download,
   getProgress,
   getDownload,
+  getStatus,
 } = require("../controllers/download.controller");
 
 const router = express.Router();
@@ -11,5 +12,5 @@ const router = express.Router();
 router.post("/", authMiddleware, download);
 router.get("/progress/:downloadId", authMiddleware, getProgress);
 router.get("/file/:downloadId", authMiddleware, getDownload);
-
+router.get("/status/:downloadId", authMiddleware, getStatus);
 module.exports = router;

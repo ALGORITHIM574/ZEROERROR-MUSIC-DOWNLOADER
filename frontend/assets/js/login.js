@@ -18,6 +18,8 @@ loginForm.addEventListener("submit", async (event) => {
     const data = await response.json();
     if (response.status === 200) {
       loginMessage.textContent = data.message;
+      localStorage.setItem("token", data.token);
+      window.location.href = "dashboard.html";
     } else if (response.status === 401) {
       loginMessage.textContent = data.error;
     } else if (response.status === 400) {

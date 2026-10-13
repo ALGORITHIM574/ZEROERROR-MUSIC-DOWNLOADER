@@ -5,7 +5,9 @@ const {
   progressStore,
   downloadStore,
   downloadOwners,
+  downloadStatus,
 } = require("../services/downloader.service");
+const { error } = require("console");
 
 // Start a new download
 const downloadController = async (req, res) => {
@@ -95,6 +97,35 @@ const getProgress = (req, res) => {
   });
 };
 
+const getStatus = (req, res) => {
+  const { downloadId } = req.params;
+
+  if (downloadOwners[downloadId] === undefined) {
+    return res.status(404).json({
+      error: "Download not found",
+    });
+  }
+
+  if (downloadOwners[downloadId] !== req.user.user_id) {
+    return res.status(403).json({
+      error: "Not authorized to access this download",
+    });
+  }
+
+  const status = downloadStatus[downloadId];
+
+  if (status === undefined) {
+    return res.status(404).json({
+      error: "The status is undefined",
+    });
+  }
+
+  return res.json({
+    downloadId,
+    status,
+  });
+};
+
 // Download a completed file
 const getDownload = (req, res) => {
   const { downloadId } = req.params;
@@ -146,4 +177,5 @@ module.exports = {
   download: downloadController,
   getProgress,
   getDownload,
+  getStatus,
 };

@@ -5,6 +5,7 @@ const fs = require("fs");
 const progressStore = {};
 const downloadStore = {};
 const downloadOwners = {};
+const downloadStatus = {};
 
 const ytDlpPath = path.join(__dirname, "../../../yt-dlp.exe");
 
@@ -17,6 +18,7 @@ const download = (url, type) => {
 
   const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
   progressStore[fileName] = 0;
+  downloadStatus[fileName] = "downloading";
   console.log("SERVER PID:", process.pid);
   console.log("CREATED PROGRESS ID:", fileName);
 
@@ -27,7 +29,7 @@ const download = (url, type) => {
   if (type === "audio") {
     args = [
       "-f",
-      "140",
+      "ba",
       "-x",
       "--audio-format",
       "mp3",
@@ -90,6 +92,7 @@ const download = (url, type) => {
     console.log("yt-dlp finished with code:", code);
 
     if (code !== 0) {
+      downloadStatus[fileName] = "failed";
       console.error("yt-dlp download failed");
       return;
     }
@@ -101,16 +104,20 @@ const download = (url, type) => {
     );
 
     if (!downloadedFile) {
+      downloadStatus[fileName] = "failed";
       console.error("Downloaded file could not be found");
       return;
     }
     downloadStore[fileName] = downloadedFile;
+    downloadStatus[fileName] = "completed";
+    progressStore[fileName] = 100;
     console.log("DOWNLOAD STORE:", downloadStore);
     console.log("Download completed:", downloadedFile);
   });
 
   // Catch errors starting/running the process
   child.on("error", (error) => {
+    downloadStatus[fileName] = "failed";
     console.error("yt-dlp process error:", error);
   });
 
@@ -125,4 +132,5 @@ module.exports = {
   progressStore,
   downloadStore,
   downloadOwners,
+  downloadStatus,
 };
