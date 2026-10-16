@@ -912,3 +912,20 @@ a {
     padding: 80px 20px;
   }
 }
+
+#downloadFileBtn[hidden] {
+  display: none !important;
+}
+
+#downloadFileBtn:not([hidden]) {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px 18px;
+  border: none;
+  border-radius: 10px;
+  background: #3b82f6;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}

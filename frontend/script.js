@@ -109,6 +109,7 @@ downloadBtn.addEventListener("click", async (e) => {
 });
 
 // CHECK PROGRESS AND STATUS
+
 async function checkProgress(downloadId) {
   try {
     const headers = authHeaders();
@@ -134,21 +135,21 @@ async function checkProgress(downloadId) {
     }
 
     const progress = Number(progressData.progress) || 0;
+    const status = statusData.status;
 
-    if (statusData.status === "failed") {
-      setStatus("Download failed. Check the backend terminal for details.");
+    if (status === "failed") {
+      setStatus("Download failed. Check the backend terminal.");
       setDownloadButtonVisible(false);
       return;
     }
 
-    if (statusData.status === "completed" || progress >= 100) {
+    if (status === "completed") {
       setStatus("Download complete. Your file is ready.");
       setDownloadButtonVisible(true);
       return;
     }
 
     setStatus(`Downloading... ${Math.floor(progress)}%`);
-
     progressTimer = setTimeout(() => checkProgress(downloadId), 1000);
   } catch (error) {
     console.error("PROGRESS ERROR:", error);
