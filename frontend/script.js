@@ -7,56 +7,99 @@ const downloadBtn = document.getElementById("downloadBtn");
 const downloadFileBtn = document.getElementById("downloadFileBtn");
 const statusBox = document.getElementById("statusBox");
 
-let selectedType = null;
+const API = "http://localhost:3001";
+
+let selectedType = "audio";
 let currentDownloadId = sessionStorage.getItem("currentDownloadId");
 let progressTimer = null;
-
-const API = "http://localhost:3001";
+let isCheckingProgress = false;
 
 function getToken() {
   return localStorage.getItem("token");
 }
 
 function setStatus(message) {
-  if (statusBox) statusBox.textContent = message;
+  if (statusBox) {
+    statusBox.classList.remove("hidden");
+    const messageElement = statusBox.querySelector(".status-message");
+
+    if (messageElement) {
+      messageElement.textContent = message;
+    } else {
+      statusBox.textContent = message;
+    }
+  }
+
+  console.log("STATUS:", message);
 }
 
 function setDownloadButtonVisible(visible) {
-  if (downloadFileBtn) downloadFileBtn.hidden = !visible;
+  if (!downloadFileBtn) {
+    console.error("downloadFileBtn was not found in the HTML.");
+    return;
+  }
+
+  downloadFileBtn.hidden = !visible;
+  downloadFileBtn.style.display = visible ? "block" : "none";
 }
 
 function authHeaders() {
   const token = getToken();
-  if (!token) throw new Error("Please log in before downloading.");
-  return { Authorization: `Bearer ${token}` };
+
+  if (!token) {
+    throw new Error("Please log in before downloading.");
+  }
+
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+}
+
+async function readResponse(response) {
+  const text = await response.text();
+
+  try {
+    return text ? JSON.parse(text) : {};
+  } catch {
+    throw new Error("The server returned an invalid response.");
+  }
+}
+
+function stopProgressChecking() {
+  if (progressTimer) {
+    clearTimeout(progressTimer);
+    progressTimer = null;
+  }
+
+  isCheckingProgress = false;
 }
 
 // AUDIO BUTTON
-audioBtn.addEventListener("click", (e) => {
+audioBtn?.addEventListener("click", (e) => {
   e.preventDefault();
-  e.stopPropagation();
 
   selectedType = "audio";
   audioBtn.classList.add("active");
-  videoBtn.classList.remove("active");
+  videoBtn?.classList.remove("active");
 });
 
 // VIDEO BUTTON
-videoBtn.addEventListener("click", (e) => {
+videoBtn?.addEventListener("click", (e) => {
   e.preventDefault();
-  e.stopPropagation();
 
   selectedType = "video";
   videoBtn.classList.add("active");
-  audioBtn.classList.remove("active");
+  audioBtn?.classList.remove("active");
 });
 
 // START DOWNLOAD
-downloadBtn.addEventListener("click", async (e) => {
+downloadBtn?.addEventListener("click", async (e) => {
   e.preventDefault();
-  e.stopPropagation();
 
-  const url = videoUrl.value.trim();
+  stopProgressChecking();
+  setDownloadButtonVisible(false);
+
+  const url = videoUrl?.value.trim();
   const type = selectedType;
 
   if (!url) {
@@ -71,9 +114,6 @@ downloadBtn.addEventListener("click", async (e) => {
 
   try {
     const headers = authHeaders();
-    setDownloadButtonVisible(false);
-
-    if (progressTimer) clearTimeout(progressTimer);
 
     setStatus("Starting download...");
 
@@ -86,10 +126,12 @@ downloadBtn.addEventListener("click", async (e) => {
       body: JSON.stringify({ url, type }),
     });
 
-    const data = await response.json();
+    const data = await readResponse(response);
 
     if (!response.ok) {
-      throw new Error(data.error || "Could not start the download.");
+      throw new Error(
+        data.error || `Could not start download (HTTP ${response.status}).`,
+      );
     }
 
     if (!data.downloadId) {
@@ -97,10 +139,12 @@ downloadBtn.addEventListener("click", async (e) => {
     }
 
     currentDownloadId = data.downloadId;
+
     sessionStorage.setItem("currentDownloadId", currentDownloadId);
     sessionStorage.setItem("currentDownloadType", type);
 
     setStatus("Download started. Checking progress...");
+
     checkProgress(currentDownloadId);
   } catch (error) {
     console.error("DOWNLOAD ERROR:", error);
@@ -109,8 +153,11 @@ downloadBtn.addEventListener("click", async (e) => {
 });
 
 // CHECK PROGRESS AND STATUS
-
 async function checkProgress(downloadId) {
+  if (isCheckingProgress) return;
+
+  isCheckingProgress = true;
+
   try {
     const headers = authHeaders();
 
@@ -123,44 +170,70 @@ async function checkProgress(downloadId) {
       }),
     ]);
 
-    const progressData = await progressResponse.json();
-    const statusData = await statusResponse.json();
+    const progressData = await readResponse(progressResponse);
+    const statusData = await readResponse(statusResponse);
 
-    if (!progressResponse.ok) {
-      throw new Error(progressData.error || "Unable to get download progress.");
-    }
+    if (!progressResponse.ok || !statusResponse.ok) {
+      const failedResponse = !progressResponse.ok
+        ? progressResponse
+        : statusResponse;
 
-    if (!statusResponse.ok) {
-      throw new Error(statusData.error || "Unable to get download status.");
+      const errorData = !progressResponse.ok ? progressData : statusData;
+
+      if (failedResponse.status === 401) {
+        stopProgressChecking();
+        setStatus("Your session may have expired. Please log in again.");
+        return;
+      }
+
+      throw new Error(
+        errorData.error ||
+          `Could not check download status (HTTP ${failedResponse.status}).`,
+      );
     }
 
     const progress = Number(progressData.progress) || 0;
     const status = statusData.status;
 
-    if (status === "failed") {
-      setStatus("Download failed. Check the backend terminal.");
-      setDownloadButtonVisible(false);
+    console.log("Download ID:", downloadId);
+    console.log("Download progress:", progress);
+    console.log("Download status:", status);
+
+    if (status === "completed") {
+      stopProgressChecking();
+      setDownloadButtonVisible(true);
+      setStatus("Download complete. Your file is ready.");
       return;
     }
 
-    if (status === "completed") {
-      setStatus("Download complete. Your file is ready.");
-      setDownloadButtonVisible(true);
+    if (status === "failed") {
+      stopProgressChecking();
+      setDownloadButtonVisible(false);
+      setStatus("Download failed. Check the backend terminal.");
       return;
     }
 
     setStatus(`Downloading... ${Math.floor(progress)}%`);
-    progressTimer = setTimeout(() => checkProgress(downloadId), 1000);
   } catch (error) {
     console.error("PROGRESS ERROR:", error);
+    stopProgressChecking();
     setStatus(error.message || "Could not check download progress.");
+    return;
+  } finally {
+    isCheckingProgress = false;
+  }
+
+  // Schedule the next check only if the download is still in progress.
+  if (currentDownloadId === downloadId) {
+    progressTimer = setTimeout(() => {
+      checkProgress(downloadId);
+    }, 1000);
   }
 }
 
 // AUTHENTICATED FILE DELIVERY
-downloadFileBtn.addEventListener("click", async (e) => {
+downloadFileBtn?.addEventListener("click", async (e) => {
   e.preventDefault();
-  e.stopPropagation();
 
   const downloadId = sessionStorage.getItem("currentDownloadId");
   const type = sessionStorage.getItem("currentDownloadType");
@@ -179,11 +252,15 @@ downloadFileBtn.addEventListener("click", async (e) => {
     );
 
     if (!response.ok) {
-      let message = "Unable to retrieve the file.";
+      let message = `Unable to retrieve file (HTTP ${response.status}).`;
+
       try {
-        const data = await response.json();
+        const data = await readResponse(response);
         message = data.error || message;
-      } catch (_) {}
+      } catch {
+        // Keep the original HTTP error message.
+      }
+
       throw new Error(message);
     }
 
@@ -200,6 +277,7 @@ downloadFileBtn.addEventListener("click", async (e) => {
     link.remove();
 
     setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+
     setStatus("Your file download has started.");
   } catch (error) {
     console.error("FILE DOWNLOAD ERROR:", error);
@@ -207,5 +285,13 @@ downloadFileBtn.addEventListener("click", async (e) => {
   }
 });
 
-// RESTORE BUTTON VISIBILITY AFTER A PAGE REFRESH
+// INITIAL PAGE STATE
 setDownloadButtonVisible(false);
+
+audioBtn?.classList.toggle("active", selectedType === "audio");
+videoBtn?.classList.toggle("active", selectedType === "video");
+
+// Restore the previous download's status after refreshing the page.
+if (currentDownloadId) {
+  checkProgress(currentDownloadId);
+}
