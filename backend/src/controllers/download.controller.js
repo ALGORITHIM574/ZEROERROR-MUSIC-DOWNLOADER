@@ -6,6 +6,7 @@ const {
   downloadStore,
   downloadOwners,
   downloadStatus,
+  downloadMetadata,
 } = require("../services/downloader.service");
 const { error } = require("console");
 
@@ -65,7 +66,6 @@ const downloadController = async (req, res) => {
     });
   }
 };
-
 // Get progress for a download
 const getProgress = (req, res) => {
   const { downloadId } = req.params;
@@ -125,7 +125,40 @@ const getStatus = (req, res) => {
     status,
   });
 };
+const getMetadata = (req, res) => {
+  const { downloadId } = req.params;
 
+  if (downloadOwners[downloadId] === undefined) {
+    return res.status(404).json({
+      error: "Download not found",
+    });
+  }
+
+  if (downloadOwners[downloadId] !== req.user.user_id) {
+    return res.status(403).json({
+      error: "Not authorized to access this download",
+    });
+  }
+
+  if (downloadStatus[downloadId] !== "completed") {
+    return res.status(409).json({
+      error: "Download is not completed yet",
+    });
+  }
+
+  const metadata = downloadMetadata[downloadId];
+
+  if (!metadata) {
+    return res.status(404).json({
+      error: "Metadata not available",
+    });
+  }
+
+  return res.json({
+    downloadId,
+    metadata,
+  });
+};
 // Download a completed file
 const getDownload = (req, res) => {
   const { downloadId } = req.params;
@@ -172,10 +205,11 @@ const getDownload = (req, res) => {
     }
   });
 };
-
 module.exports = {
   download: downloadController,
   getProgress,
   getDownload,
   getStatus,
+  getMetadata,
+  downloadMetadata,
 };

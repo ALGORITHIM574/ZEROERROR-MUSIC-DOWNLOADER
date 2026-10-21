@@ -1,31 +1,28 @@
-# Use a lightweight Node image
-FROM node:18-slim
 
-# Install system dependencies: Python3, pip, and ffmpeg (required for yt-dlp)
-RUN apt-get update && apt-get install -y \
+FROM node:24-bookworm-slim
+
+# Install FFmpeg and Python for yt-dlp
+RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
-    python3-pip \
     ffmpeg \
-    curl \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Install yt-dlp globally so your Node app can run it
-RUN pip3 install --no-cache-dir yt-dlp --break-system-packages
+# Install yt-dlp in the Linux container
+RUN python3 -m pip install --no-cache-dir --break-system-packages yt-dlp
 
-# Set the working directory inside the container
-WORKDIR /app
+# Set the backend working directory
+WORKDIR /app/backend
 
-# Copy package files and install Node dependencies
-COPY package*.json ./
+# Install backend dependencies
+COPY backend/package*.json ./
 RUN npm install
 
-# Copy the rest of your application code
-COPY . .
+# Copy backend source files
+COPY backend/ ./
 
-# Render dynamically assigns a port, but defaults to 10000 often. 
-# Express should use process.env.PORT || 10000
-ENV PORT=10000
-EXPOSE 10000
+# Store downloads inside the container
+RUN mkdir -p downloads
 
-# Start your application
+# Render provides PORT at runtime
 CMD ["npm", "start"]

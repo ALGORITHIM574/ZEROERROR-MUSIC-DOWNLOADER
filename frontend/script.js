@@ -6,6 +6,68 @@ const videoBtn = document.getElementById("videoBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 const downloadFileBtn = document.getElementById("downloadFileBtn");
 const statusBox = document.getElementById("statusBox");
+const loginbtn = document.getElementById("login-btn");
+
+// const loginBtn = document.getElementById("loginbtn");
+
+// loginbtn.addEventListener("click", function () {
+//   window.location.href = "loginpage.html";
+// });
+
+// Media artwork and details
+const mediaCard = document.createElement("div");
+mediaCard.id = "mediaCard";
+mediaCard.hidden = true;
+
+mediaCard.style.cssText = `
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 480px;
+  margin: 16px 0;
+  padding: 14px;
+  border: 1px solid #334155;
+  border-radius: 14px;
+  background: #1e293b;
+  color: #f8fafc;
+`;
+
+const mediaImage = document.createElement("img");
+mediaImage.alt = "Media artwork";
+mediaImage.style.cssText = `
+  width: 88px;
+  height: 88px;
+  object-fit: cover;
+  border-radius: 10px;
+  flex-shrink: 0;
+`;
+
+const mediaDetails = document.createElement("div");
+mediaDetails.style.cssText = `
+  min-width: 0;
+  overflow-wrap: anywhere;
+`;
+
+const mediaTitle = document.createElement("div");
+mediaTitle.style.cssText = `
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 6px;
+`;
+
+const mediaArtist = document.createElement("div");
+mediaArtist.style.cssText = `
+  color: #94a3b8;
+  font-size: 13px;
+`;
+
+mediaDetails.append(mediaTitle, mediaArtist);
+mediaCard.append(mediaImage, mediaDetails);
+
+// Insert the card beside the existing download button
+if (downloadFileBtn?.parentElement) {
+  downloadFileBtn.insertAdjacentElement("afterend", mediaCard);
+}
 
 const API = "http://localhost:3001";
 
@@ -72,6 +134,47 @@ function stopProgressChecking() {
   }
 
   isCheckingProgress = false;
+}
+// Load artwork and details for a completed download
+async function loadDownloadMetadata(downloadId) {
+  try {
+    const response = await fetch(
+      `${API}/api/download/metadata/${encodeURIComponent(downloadId)}`,
+      {
+        headers: authHeaders(),
+      },
+    );
+
+    const data = await readResponse(response);
+
+    if (!response.ok) {
+      throw new Error(data.error || "Could not load media details.");
+    }
+
+    const metadata = data.metadata;
+
+    if (!metadata) {
+      throw new Error("Media details are missing.");
+    }
+
+    mediaTitle.textContent = metadata.title || "Downloaded media";
+    mediaArtist.textContent = metadata.artist || "Unknown artist";
+
+    // Display the actual thumbnail when available
+    if (metadata.thumbnail) {
+      mediaImage.src = metadata.thumbnail;
+      mediaImage.hidden = false;
+    } else {
+      mediaImage.removeAttribute("src");
+      mediaImage.hidden = true;
+    }
+
+    mediaCard.hidden = false;
+    mediaCard.style.display = "flex";
+  } catch (error) {
+    console.error("METADATA ERROR:", error);
+    mediaCard.hidden = true;
+  }
 }
 
 // AUDIO BUTTON
@@ -203,6 +306,7 @@ async function checkProgress(downloadId) {
       stopProgressChecking();
       setDownloadButtonVisible(true);
       setStatus("Download complete. Your file is ready.");
+      await loadDownloadMetadata(downloadId);
       return;
     }
 
