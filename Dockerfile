@@ -9,7 +9,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install yt-dlp in the Linux container
-RUN python3 -m pip install --no-cache-dir --break-system-packages yt-dlp
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    python3-pip \
+    ffmpeg \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set the backend working directory
 WORKDIR /app/backend

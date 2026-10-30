@@ -16,6 +16,9 @@ pool
   });
 const downloadRoutes = require("./routes/download.routes");
 const authRoutes = require("./routes/auth.routes");
+// const historyRoutes = require("./routes/history.routes");
+
+// app.use("/api/history", historyRoutes);
 
 app.use(cors());
 app.use(express.json());

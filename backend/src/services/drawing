@@ -243,3 +243,17 @@ bcrypt compares passwords
 authenticated ✓
  ↓
 create login session/token
+
+Existing users table
+        |
+        v
+Plans ── Subscriptions ── Payments
+        |
+        v
+Backend plan and usage checks
+        |
+        v
+Existing download routes and service
+        |
+        v
+yt-dlp + FFmpeg

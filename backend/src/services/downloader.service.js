@@ -1,15 +1,20 @@
 const { spawn } = require("child_process");
 const path = require("path");
 const fs = require("fs");
+const pool = require("../config/database");
 
 const progressStore = {};
 const downloadStore = {};
 const downloadOwners = {};
 const downloadStatus = {};
 const downloadMetadata = {};
-const ytDlpPath = path.join(__dirname, "../../../yt-dlp.exe");
 
-const download = (url, type) => {
+const ytDlpPath =
+  process.platform === "win32"
+    ? path.join(__dirname, "../../../yt-dlp.exe")
+    : "yt-dlp";
+
+const download = async (url, type, userId) => {
   const downloadsDir = path.join(__dirname, "../downloads");
 
   if (!fs.existsSync(downloadsDir)) {
@@ -17,8 +22,10 @@ const download = (url, type) => {
   }
 
   const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
   progressStore[fileName] = 0;
   downloadStatus[fileName] = "downloading";
+
   console.log("SERVER PID:", process.pid);
   console.log("CREATED PROGRESS ID:", fileName);
 
@@ -61,6 +68,15 @@ const download = (url, type) => {
     throw new Error("Invalid download type");
   }
 
+  // Create download history record
+  const [historyResult] = await pool.execute(
+    `INSERT INTO download_history (user_id, status, media_type)
+     VALUES (?, 'pending', ?)`,
+    [userId, type],
+  );
+
+  const historyId = historyResult.insertId;
+
   // Start yt-dlp
   const child = spawn(ytDlpPath, args);
 
@@ -89,12 +105,21 @@ const download = (url, type) => {
       console.log("PROGRESS:", percentage);
     }
   });
+
   // yt-dlp has finished
   child.on("close", (code) => {
     console.log("yt-dlp finished with code:", code);
 
     if (code !== 0) {
       downloadStatus[fileName] = "failed";
+
+      pool
+        .execute(
+          "UPDATE download_history SET status = 'failed' WHERE download_id = ?",
+          [historyId],
+        )
+        .catch(console.error);
+
       console.error("yt-dlp download failed");
       return;
     }
@@ -108,6 +133,14 @@ const download = (url, type) => {
 
     if (!downloadedFile) {
       downloadStatus[fileName] = "failed";
+
+      pool
+        .execute(
+          "UPDATE download_history SET status = 'failed' WHERE download_id = ?",
+          [historyId],
+        )
+        .catch(console.error);
+
       console.error("Downloaded file could not be found");
       return;
     }
@@ -155,6 +188,30 @@ const download = (url, type) => {
     // Save the completed download
     downloadStore[fileName] = downloadedFile;
     downloadStatus[fileName] = "completed";
+
+    const stats = fs.statSync(path.join(downloadsDir, downloadedFile));
+
+    // Save file information and metadata to MySQL
+    pool
+      .execute(
+        `UPDATE download_history
+       SET status = 'completed',
+           file_size_bytes = ?,
+           title = ?,
+           artist = ?,
+           thumbnail = ?,
+           completed_at = NOW()
+       WHERE download_id = ?`,
+        [
+          stats.size,
+          downloadMetadata[fileName].title,
+          downloadMetadata[fileName].artist,
+          downloadMetadata[fileName].thumbnail,
+          historyId,
+        ],
+      )
+      .catch(console.error);
+
     progressStore[fileName] = 100;
 
     console.log("DOWNLOAD STORE:", downloadStore);
@@ -165,6 +222,14 @@ const download = (url, type) => {
   // Catch errors starting/running the process
   child.on("error", (error) => {
     downloadStatus[fileName] = "failed";
+
+    pool
+      .execute(
+        "UPDATE download_history SET status = 'failed' WHERE download_id = ?",
+        [historyId],
+      )
+      .catch(console.error);
+
     console.error("yt-dlp process error:", error);
   });
 

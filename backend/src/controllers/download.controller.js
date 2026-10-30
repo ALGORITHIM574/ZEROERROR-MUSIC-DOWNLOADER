@@ -8,7 +8,7 @@ const {
   downloadStatus,
   downloadMetadata,
 } = require("../services/downloader.service");
-const { error } = require("console");
+// const { error } = require("console");
 
 // Start a new download
 const downloadController = async (req, res) => {
@@ -49,7 +49,7 @@ const downloadController = async (req, res) => {
       });
     }
 
-    const result = download(url, type);
+    const result = await download(url, type, req.user.user_id);
 
     // Record which user owns this download
     downloadOwners[result.downloadId] = req.user.user_id;
